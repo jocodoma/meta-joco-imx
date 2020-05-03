@@ -42,7 +42,7 @@ IMAGE_INSTALL += " \
     ${X11_TOOLS} \
 "
 
-# Set up time zone
+# Post processing
 IMAGE_BLACKLIST_FILES += " \
     /etc/init.d/hwclock.sh \
  "
