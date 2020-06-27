@@ -1,64 +1,23 @@
-SUMMARY = "Joco x11 Image"
+SUMMARY = "Joco x11 Release Image"
+HOMEPAGE = "https://about.jocodoma.com/"
 MAINTAINER = "Joseph Chen <jocodoma@gmail.com>"
 
-require recipes-graphics/images/core-image-x11.bb
+require core-image-joco-x11-base.bb
 
-# GLIBC_GENERATE_LOCALES = "en_US.UTF-8"
-IMAGE_FEATURES_append = " ssh-server-dropbear hwcodecs"
-# IMAGE_FEATURES_remove = "splash"
-IMAGE_FSTYPES += "tar.bz2"
-# IMAGE_LINGUAS = "en-us"
+# Remove "debug-tweaks" for final release image
+#EXTRA_IMAGE_FEATURES_remove = "debug-tweaks"
 
-BSP = " \
-    u-boot-imx \
-    linux-imx \
-"
+# Add password to protect login for release image
+# The default password for root is set to "joco1234"
+#inherit extrausers
+#EXTRA_USERS_PARAMS = "usermod -P joco1234 root;"
 
-FONTS = " \
-    fontconfig \
-    fontconfig-utils \
-    ttf-bitstream-vera \
-"
+# To allow root to login from SSH
+#set_allow_root_ssh() {
+#    # /etc/ssh/sshd_config
+#    echo "PermitRootLogin yes" >> ${IMAGE_ROOTFS}/etc/ssh/sshd_config
+#}
 
-TIME_ZONE = " \
-    tzdata \
-"
-
-TSLIB = " \
-    tslib \
-    tslib-conf \
-    tslib-calibrate \
-    tslib-tests \
-"
-
-X11_TOOLS = " \
-    xdotool \
-"
-
-IMAGE_INSTALL += " \
-    ${@oe.utils.conditional('DISTRO', 'poky', '', '${BSP}', d)} \
-    packagegroup-joco-qt5 \
-    ${TIME_ZONE} \
-    ${X11_TOOLS} \
-"
-
-# Post processing
-IMAGE_BLACKLIST_FILES += " \
-    /etc/init.d/hwclock.sh \
- "
-
-remove_blacklist_files() {
-    for i in ${IMAGE_BLACKLIST_FILES}; do
-        rm -rf ${IMAGE_ROOTFS}$i
-    done
-}
-
-set_local_timezone() {
-    # ln -sf /usr/share/zoneinfo/Asia/Seoul ${IMAGE_ROOTFS}/etc/localtime
-    ln -sf /usr/share/zoneinfo/America/Los_Angeles ${IMAGE_ROOTFS}/etc/localtime
-}
-
-ROOTFS_POSTPROCESS_COMMAND += " \
-    remove_blacklist_files ; \
-    set_local_timezone ; \
-"
+#ROOTFS_POSTPROCESS_COMMAND += " \
+#    set_allow_root_ssh ; \
+#"
